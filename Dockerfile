@@ -1,18 +1,15 @@
-# Use the official n8n image
+# Official n8n image (includes n8n binary)
 FROM n8nio/n8n:latest
 
-# Switch to root to copy files if needed
-USER root
+# Optional: copy custom settings
+COPY ./config /home/node/.n8n
 
-# Copy your workflow JSON into n8n's folder
-# (replace 'workflow.json' with your actual workflow file name)
-COPY workflow.json /home/node/.n8n/workflow.json
+# Fix permissions
+RUN chmod 600 /home/node/.n8n/config
+ENV N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
 
-# Set permissions for n8n user
-RUN chown node:node /home/node/.n8n/workflow.json
+# Expose port 5678
+EXPOSE 5678
 
-# Switch back to node user
-USER node
-
-# Default n8n command
-CMD ["n8n", "start"]
+# Start n8n
+CMD ["n8n"]
